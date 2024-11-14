@@ -81,13 +81,15 @@ def insert_doc():
             return render_success_message("Documento já existe")
         
         # Coletando os dados do formulário
+        filmeserie = request.form.get('filmeserie')
+        duracao = request.form.get('duracao')
         tipo = request.form.get('tipo')
-        mensagem = request.form.get('mensagem')
+        # mensagem = request.form.get('mensagem')
 
         # Armazenando os dados no Redis como uma hash
         try:
             # A chave será "db_name:docs" e o campo da hash será o "key_id"
-            server.hset(f"{db_name}:docs", key_id, f"tipo:{tipo},mensagem:{mensagem}")
+            server.hset(f"{db_name}:docs", key_id, f"Nome do filme/serie: {filmeserie}, Duracao: {duracao}, Tipo: {tipo}")
             return render_success_message(f'Documento inserido com sucesso no banco de dados {db_name}')
         except redis.RedisError as e:
             return render_success_message(f'Erro ao inserir documento no banco de dados {db_name}: {e}')
@@ -107,9 +109,10 @@ def insert_doc():
             <form method="post">
                 <input type="text" name="db_name" placeholder="Digite o nome do banco de dados">
                 <input type="text" name="key_id" placeholder="Digite o ID do documento">
-                <input type="text" name="tipo" placeholder="Digite o tipo do documento">
-                <input type="text" name="mensagem" placeholder="Digite a mensagem do documento">
-                <input type="submit" value="Inserir">
+                <input type="text" name="filmeserie" placeholder="Digite o nome do filme ou série">
+                <input type="text" name="duracao" placeholder="Digite a duracao em XX:XX">
+                <input type="text" name="tipo" placeholder="Digite o tipo do filme">
+                <input type="submit" value="Inserir midia">
             </form>
         </div>
     </body>
@@ -131,8 +134,13 @@ def query_data():
         data = server.hget(key, key_id).decode('utf-8')
         
         # Dividir os dados para exibir na tabela
-        data_dict = dict(item.split(":") for item in data.split(","))
-        
+        # Usa um dicionário para exibir os campos e valores corretamente
+        data_dict = {}
+        for item in data.split(","):
+            key_value = item.split(":", 1)  # Divide apenas no primeiro ":" para evitar problemas
+            if len(key_value) == 2:
+                data_dict[key_value[0].strip()] = key_value[1].strip()
+
         # Renderizar os dados em uma tabela HTML
         table_html = '''
         <!doctype html>
