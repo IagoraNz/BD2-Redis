@@ -1,13 +1,32 @@
+# ---------------------------------------------------------------------------------------------------------- #
+
+# Importando as bibliotecas necessárias
+
 from flask import Flask, redirect, url_for, request, render_template_string
 import redis
 import os
 
+# ---------------------------------------------------------------------------------------------------------- #
+
 app = Flask(__name__)
 
-# Conectar ao Redis
+'''
+    Esse trecho de código é responsável por criar uma conexão com o Redis
+'''
 redis_url = os.getenv('REDIS_URL', 'redis://localhost:6379')
 server = redis.Redis.from_url(redis_url)
 
+# ---------------------------------------------------------------------------------------------------------- #
+
+'''
+    summary
+        Essa função é responsável por renderizar a página inicial da aplicação, incluindo
+        o menu de opções para criar, inserir, consultar e deletar dados.
+    param
+        Nenhum
+    return
+        render_template_string: Retorna o HTML renderizado com o menu de opções
+'''
 @app.route('/')
 def index():
     return render_template_string('''
@@ -34,7 +53,17 @@ def index():
     </body>
     </html>
     ''')
+    
+# ---------------------------------------------------------------------------------------------------------- #
 
+'''
+    summary
+        Essa função é responsável por criar um banco de dados no Redis
+    param
+        Nenhum
+    return
+        render_template_string: Retorna o HTML renderizado com o formulário para criar um banco de dados        
+'''
 @app.route('/create_db', methods=['GET', 'POST'])
 def create_db():
     if request.method == 'POST':
@@ -65,7 +94,19 @@ def create_db():
     </body>
     </html>
     ''')
+    
+# ---------------------------------------------------------------------------------------------------------- #
 
+'''
+    summary
+        Essa função é responsável por inserir um documento no banco de dados, para isso
+        é necessário informar o nome do banco de dados, o ID do documento, o nome do filme/serie,
+        a duração e o tipo.
+    param
+        Nenhum
+    return
+        render_template_string: Retorna o HTML renderizado com o formulário para inserir um documento
+'''
 @app.route('/insert_doc', methods=['GET', 'POST'])
 def insert_doc():
     if request.method == 'POST':
@@ -118,7 +159,18 @@ def insert_doc():
     </body>
     </html>
     ''')
+    
+# ---------------------------------------------------------------------------------------------------------- #
 
+'''
+    summary
+        Essa função é responsável por consultar um documento no banco de dados, para isso
+        é necessário informar o nome do banco de dados e o ID do documento.
+    param
+        Nenhum
+    return
+        render_template_string: Retorna o HTML renderizado com o formulário para consultar um documento
+'''
 @app.route('/query_data', methods=['GET', 'POST'])
 def query_data():
     if request.method == 'POST':
@@ -200,7 +252,18 @@ def query_data():
     </body>
     </html>
     ''')
+    
+# ---------------------------------------------------------------------------------------------------------- #
 
+'''
+    summary
+        Essa função é responsável por deletar um documento no banco de dados, para isso
+        é necessário informar o nome do banco de dados e o ID do documento.
+    param
+        Nenhum
+    return
+        render_template_string: Retorna o HTML renderizado com o formulário para deletar um documento
+'''
 @app.route('/delete_data', methods=['GET', 'POST'])
 def delete_data():
     if request.method == 'POST':
@@ -236,7 +299,17 @@ def delete_data():
     </body>
     </html>
     ''')
+    
+# ---------------------------------------------------------------------------------------------------------- #
 
+'''
+    summary
+        Essa função é responsável por deletar um banco de dados no Redis
+    param
+        Nenhum
+    return
+        render_template_string: Retorna o HTML renderizado com o formulário para deletar um banco de dados
+'''
 @app.route('/drop_db', methods=['GET', 'POST'])
 def drop_db():
     if request.method == 'POST':
@@ -270,7 +343,17 @@ def drop_db():
     </body>
     </html>
     ''')
+    
+# ---------------------------------------------------------------------------------------------------------- #
 
+'''
+    summary
+        Essa função é responsável por renderizar uma mensagem de sucesso
+    param
+        message: Mensagem a ser exibida, normalmente uma ação realizada com sucesso
+    return
+        render_template_string: Retorna o HTML renderizado com a mensagem de sucesso
+'''
 def render_success_message(message):
     return render_template_string(f'''
     <!doctype html>
@@ -289,6 +372,12 @@ def render_success_message(message):
     </body>
     </html>
     ''')
+    
+# ---------------------------------------------------------------------------------------------------------- #
 
+'''
+    summary
+        Essa função é responsável por renderizar a aplicação
+'''
 if __name__ == '__main__':
     app.run(debug=True)
