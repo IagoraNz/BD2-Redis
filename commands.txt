@@ -1,0 +1,7 @@
+1. Iniciar o servidor Redis
+    sudo service redis-server start
+    ou redis-server
+2. Testar a conexão Redis
+    redis-cli ping
+    2.1 Que deve responder
+        PONG
